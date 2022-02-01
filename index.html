@@ -2,60 +2,221 @@
 <html>
   <head>
     <script src="jquery-3.6.0.js" type="text/javascript"></script>
-    <script>
-var url = "https://farkhad.amocrm.ru/api/v4/contacts";
+    <script type="text/javascript">
+      /*
+      Решение будет работать с отключенным CORS в браузере.
+      Иначе сервер API не возвращает заголовки Access-Control-Allow-* 
+      необходимые для работы с разными источниками.
+      Access to XMLHttpRequest at 'https://farkhad.amocrm.ru/api/v4/contacts?limit=25&with=leads&page=1' from origin 'http://localhost:8000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+      Preflight Server Response:
+      Allow: PATCH,GET,POST
+      Cache-Control: no-store, no-cache, must-revalidate
+      Connection: keep-alive
+      Content-Encoding: gzip
+      Content-Type: text/html; charset=UTF-8
+      Date: Sun, 30 Jan 2022 14:07:09 GMT
+      Expires: Thu, 19 Nov 1981 08:52:00 GMT
+      Pragma: no-cache
+      Server: nginx
+      Set-Cookie: session_id=civb8mgb06s0q11s4q78bv3a6q; path=/; domain=.amocrm.ru; secure; HttpOnly
+      Strict-Transport-Security: max-age=31536000
+      Transfer-Encoding: chunked
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: sameorigin
+      X-Request-Id: f5010fbcf6dd3a86beb092e3b67465c5
+      X-Runtime-Generated: 0.0279
+      X-XSS-Protection: 1; mode=block
+      */
 
-var xhr = new XMLHttpRequest();
-xhr.open("GET", url);
+      // JWT token for amocrm API authorization
+      const access_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6Ijk0YWUwZDgyMDBlNzdmYjI4Mjk2MjIwMWZiNmM2NmZjNjg5YTE4ODVjZGRkNDRlMTI1NGY5M2EyNzdmZWUyY2VkM2IwZjhmNjdlMDYzZTZjIn0.eyJhdWQiOiIzNGUwZGU4Zi0wODE0LTRlNzUtODgzZC00MjkzODg5MDljMTkiLCJqdGkiOiI5NGFlMGQ4MjAwZTc3ZmIyODI5NjIyMDFmYjZjNjZmYzY4OWExODg1Y2RkZDQ0ZTEyNTRmOTNhMjc3ZmVlMmNlZDNiMGY4ZjY3ZTA2M2U2YyIsImlhdCI6MTY0MzYzODE0NiwibmJmIjoxNjQzNjM4MTQ2LCJleHAiOjE2NDM3MjQ1NDYsInN1YiI6Ijc4NzA4NjciLCJhY2NvdW50X2lkIjoyOTk3NDU3Mywic2NvcGVzIjpbInB1c2hfbm90aWZpY2F0aW9ucyIsImNybSIsIm5vdGlmaWNhdGlvbnMiXX0.ibx_xl2lNSXn93-IILJR5pfvVeYcDAmI2v_XCSh754wzRoTJlq37BWeup42nrLACag5R3d09-mQgky0EkaoId0LbeFClcfcyoqL6O80ZsV8GiroXs1qcIDOKXFRa7pJQ0iC9d7-bajNgfdjP_iMaqEbWSdBcChmlQPST26ar3f3LHqb2KbttMnwuvNJOu3nD--PSQbgI9CbmNBkQGMkGuaDqt3OYko9W-Lows2W9Df6oJQjQurjKcspII_ZeeoqiU66oNxgB66RigY2mZC5arCObtGS7H--l4Og95SrEYcXNPWZWEWYTLjU1RWiqwCF8ojmivILrkOEcPgoz07Rp-g';
 
-xhr.setRequestHeader("Accept", "application/json");
-xhr.setRequestHeader("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImE3YjViMTk5Mzk3NjczNThkNmJkYTFmNTk5NjE0YTNmODQ4MzVmOGU0ZmM3ZTYzMjZlYWE2OWY3M2YwZTRiMDY3NDI0ZTYyOTNlMDFjNjdiIn0.eyJhdWQiOiIzNGUwZGU4Zi0wODE0LTRlNzUtODgzZC00MjkzODg5MDljMTkiLCJqdGkiOiJhN2I1YjE5OTM5NzY3MzU4ZDZiZGExZjU5OTYxNGEzZjg0ODM1ZjhlNGZjN2U2MzI2ZWFhNjlmNzNmMGU0YjA2NzQyNGU2MjkzZTAxYzY3YiIsImlhdCI6MTY0MzQ1OTA5NiwibmJmIjoxNjQzNDU5MDk2LCJleHAiOjE2NDM1NDU0OTYsInN1YiI6Ijc4NzA4NjciLCJhY2NvdW50X2lkIjoyOTk3NDU3Mywic2NvcGVzIjpbInB1c2hfbm90aWZpY2F0aW9ucyIsImNybSIsIm5vdGlmaWNhdGlvbnMiXX0.fBkZIzgIu2buYS8l3qEa2bWjd0ycqURS4wDxZXF61XLO0vG0YajFcXAlmaGUWrS192tWL3JUNEEXeT5KBpZAw4F6aCmVkaKvx53L_ZP4dNVaU9ZNE19lZ5uTebAeBJ_j1O6J2Bw93uCtmiJTHnUC0d8DG0nSSmqSBVDFRTlTOc-HW-o7OGBJkUlV-jbbN_9wGGjj42VcNbALGDl_BnDIh6FWRtnOFF_56YWY4h6KiQzHmU2KGvB8koMmzyBEbZBdub2UgAgKVFQaRKnL0TieTVUBVstmNwcAcTOgK4UCfaCmuaOHpc9_Tong_YHtDatNeLXjozZiysV1WXBPVCvBZw");
+      // название задачи
+      const taskName = 'Контакт без сделок';
 
-xhr.onreadystatechange = function () {
-   if (xhr.readyState === 4) {
-      console.log(xhr.status);
-      console.log(xhr.responseText);
-   }};
+      // API хост
+      const hostAddr = 'https://farkhad.amocrm.ru';
 
-xhr.send();
-    </script>
-    <!--script type="text/javascript">
+      // адрес API для пакетного создания задач
+      const tasksCreateUrl = '/api/v4/tasks';
+
+      // кол-во возвращаемых записей контактов
       const limit = 25;
-      const access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImE3YjViMTk5Mzk3NjczNThkNmJkYTFmNTk5NjE0YTNmODQ4MzVmOGU0ZmM3ZTYzMjZlYWE2OWY3M2YwZTRiMDY3NDI0ZTYyOTNlMDFjNjdiIn0.eyJhdWQiOiIzNGUwZGU4Zi0wODE0LTRlNzUtODgzZC00MjkzODg5MDljMTkiLCJqdGkiOiJhN2I1YjE5OTM5NzY3MzU4ZDZiZGExZjU5OTYxNGEzZjg0ODM1ZjhlNGZjN2U2MzI2ZWFhNjlmNzNmMGU0YjA2NzQyNGU2MjkzZTAxYzY3YiIsImlhdCI6MTY0MzQ1OTA5NiwibmJmIjoxNjQzNDU5MDk2LCJleHAiOjE2NDM1NDU0OTYsInN1YiI6Ijc4NzA4NjciLCJhY2NvdW50X2lkIjoyOTk3NDU3Mywic2NvcGVzIjpbInB1c2hfbm90aWZpY2F0aW9ucyIsImNybSIsIm5vdGlmaWNhdGlvbnMiXX0.fBkZIzgIu2buYS8l3qEa2bWjd0ycqURS4wDxZXF61XLO0vG0YajFcXAlmaGUWrS192tWL3JUNEEXeT5KBpZAw4F6aCmVkaKvx53L_ZP4dNVaU9ZNE19lZ5uTebAeBJ_j1O6J2Bw93uCtmiJTHnUC0d8DG0nSSmqSBVDFRTlTOc-HW-o7OGBJkUlV-jbbN_9wGGjj42VcNbALGDl_BnDIh6FWRtnOFF_56YWY4h6KiQzHmU2KGvB8koMmzyBEbZBdub2UgAgKVFQaRKnL0TieTVUBVstmNwcAcTOgK4UCfaCmuaOHpc9_Tong_YHtDatNeLXjozZiysV1WXBPVCvBZw";
+      
+      // номер страницы с контактами
       let page = 1;
-      let getContactsListQueryUrl = 'https://farkhad.amocrm.ru/api/v4/contacts';
+      
+      // адрес API для работы с контактами
+      let getContactsListQueryUrl = '/api/v4/contacts';
+      
+      // Адрес API задач для поиска задач, связанных с контактами 
+      // - с привязанным контактом (entity_type=contacts&entity_id[]=xxx)
+      // - типом задачи: звонок (1)
+      // - статусом задачи: к выполнению (незавершенные)
+      // Если такие задачи не найдены, будет возвращена пустая строка String(0)
+      // Если будут найдены связанные задачи с текстом "Контакт без сделок", то
+      // создавать новую задачу "Контакт без сделок" для данного контакта не надо
+      // Пример ответа: https://www.amocrm.ru/developers/content/crm_platform/tasks-api
+      let tasksContactsQueryUrl = '/api/v4/tasks?filter[task_type]=1&filter[is_completed]=0&filter[entity_type]=contacts';
 
       function getContacts() {
-          $.ajax({
-              url: getContactsListQueryUrl,
-              method: 'GET',
-              data: {
-                  limit: limit,
-                  with: 'leads',
-                  page: page
-              },
-              headers: {
-                Accept: 'application/json',
-                Authorization: 'Bearer ' + access_token
-              }
-          }).done(function(data) {
-              if (!!data) {
-                  console.log(data);
+        $.ajax({
+            crossDomain: true,
+            url: hostAddr + getContactsListQueryUrl,
+            method: 'GET',
+            data: {
+                limit: limit,
+                with: 'leads',
+                page: page
+            },
+            dataType: 'json',
+            headers: {
+              Authorization: 'Bearer ' + access_token
+            }
+        }).done(function(data) {
+            if (!!data) {
+                if (typeof data._embedded.contacts != 'undefined') {
+                  // Обработка полученного массива контактов
+                  // - поиск связанных задач
+                  // - создание задач для контактов без сделок
+                  processContacts(data._embedded.contacts);
 
-              } else {
-                  console.log('Контактов нет');
+                  // Продолжаем искать контакты на другой странице
+                  // Переменная page будет увеличена на единицу к этому моменту 
+                  getContacts();
+                } else {
+                  console.log('Отсутствует массив контактов', data);
                   return false;
-              }
-          }).fail(function(data) {
-              console.log('Что-то пошло не так c получением контактов');
-              console.log(data);
-              return false;
-          })
+                }
+            } else {
+                console.log('Контактов нет');
+                return false;
+            }
+        }).fail(function(data) {
+            console.log('Что-то пошло не так c получением контактов', data);
+            return false;
+        });
 
-          page++;
+        page++;
       }
-      getContacts();
 
-    </script-->
+      // Обработка массива контактов
+      function processContacts(contacts) {
+        // массив ID контаков без сделок
+        let contactsNoLeads = getContactsWithNoLeads(contacts);
+
+        // проверяем нашлись ли контакты без сделок
+        if (contactsNoLeads.length > 0) {
+          // проверяем, есть ли у найденных контактов связанные задачи
+          // не указываем limit, page, т.к. оперируем уже ограниченным набором ID контактов
+          $.ajax({
+            crossDomain: true,
+            url: hostAddr + tasksContactsQueryUrl,
+            method: 'GET',
+            data: {
+              // jQuery автоматически переведет массив ID 
+              // в правильную форму query_string
+              'filter[entity_id]': contactsNoLeads
+            },
+            dataType: 'json',
+            headers: {
+              Authorization: 'Bearer ' + access_token
+            }
+          }).done(function(data) {
+            if (!!data && typeof data._embedded.tasks != 'undefined') {
+              // нашли связанные с массивом контактов задачи
+              data._embedded.tasks.forEach(task => {
+                // Если задача с заданным названием taskName существует,
+                // то новую задачу для этого контакта не создаем
+                if (task.text === taskName) {
+                  // Удаляем ID контакта из массива контактов, 
+                  // чтобы не создавать задачу для него
+                  let contactIdx = contactsNoLeads.indexOf(task.entity_id);
+                  if (contactIdx > -1) {
+                    // удаляем найденный элемент из массива контактов
+                    contactsNoLeads.splice(contactIdx, 1);
+                  }
+                }
+              });
+            }
+
+            // создаем задачи для отобранных контактов
+            // массив contactsNoLeads ранее мог быть обновлен,
+            // поэтому снова проверяем есть ли в нем элементы
+            if (contactsNoLeads.length > 0) {
+              createTasksWithContacts(contactsNoLeads);
+            }
+          }).fail(function(data) {
+            console.log("Что-то пошло не так с поиском задач", data);
+            return false;
+          });
+        }
+      }
+
+      // Получить массив ID контактов без сделок
+      function getContactsWithNoLeads(contacts) {
+        // локальный массив контаков без сделок
+        let contactsNoLeads = [];
+
+        contacts.forEach(contact => {
+          // Ищем контакт без сделки (= нет привязанной сущности leads)
+          if (contact._embedded.leads.length === 0) {
+            // Контакт без сделок
+            // Сохраняем контакт в массиве контактов без сделки
+            contactsNoLeads.push(contact.id);
+          }
+        });
+
+        return contactsNoLeads;
+      }
+
+      // Получить массив задач для создания
+      function getTasksToCreate(contactsNoLeads) {
+        // API позволяет создать задачи пакетно,
+        // подготовим массив новых задач
+        let tasksToCreate = [];
+
+        // дата завершения задачи в формате unix timestamp
+        // срок завершения = через 7 суток
+        let completeTillUnixTimestamp = Math.floor(Date.now() / 1000 + 7 * 86400);
+        
+        // заполним массив новых задач
+        contactsNoLeads.forEach(contactID => {
+          tasksToCreate.push(
+            '{"entity_id":' + contactID + ',"entity_type":"contacts","text":"' + taskName 
+            + '","complete_till":' + completeTillUnixTimestamp + ',"task_type_id":1}'
+          );
+        });
+        
+        return tasksToCreate;
+      }
+
+      // пакетное создание задач, связанных с контактами без сделок
+      function createTasksWithContacts(contactsNoLeads) {
+        // получить массив задач для создания
+        let tasksToCreate = getTasksToCreate(contactsNoLeads);
+
+        if (tasksToCreate.length > 0) {
+          // создаем задачи для контактов без сделок
+          $.ajax({
+            crossDomain: true,
+            url: hostAddr + tasksCreateUrl,
+            method: 'POST',
+            data: '[' + tasksToCreate.join(",") + ']',
+            dataType: 'json',
+            headers: {
+              Authorization: 'Bearer ' + access_token
+            }
+          }).done(function(data) {
+            console.log('Новые задачи были созданы', data);
+          }).fail(function(data) {
+            console.log('Что-то пошло не так с попыткой создать новые задачи', data);
+            return false;
+          });
+        }
+      }
+
+      getContacts();
+    </script>
   </head>
 </html>
