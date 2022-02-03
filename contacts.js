@@ -24,7 +24,7 @@ const access_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImQ1NGM2OGI4ZD
 const taskName = 'Контакт без сделок';
 
 // API хост
-const hostAddr = 'https://farkhad-amocrm-api.herokuapp.com/https://farkhad.amocrm.ru';
+const hostAddr = 'https://farkhad.amocrm.ru';
 
 // адрес API для пакетного создания задач
 const tasksCreateUrl = '/api/v4/tasks';
